@@ -48,6 +48,7 @@ package com.bit101.components
 		protected var _selectedColor:uint = Style.LIST_SELECTED;
 		protected var _rolloverColor:uint = Style.LIST_ROLLOVER;
 		protected var _alternateRows:Boolean = false;
+        private var _selectable:Boolean = true;
 		
 		/**
 		 * Constructor
@@ -105,8 +106,7 @@ package com.bit101.components
 			while(_itemHolder.numChildren > 0)
 			{
 				item = ListItem(_itemHolder.getChildAt(0));
-				item.removeEventListener(MouseEvent.CLICK, onSelect);
-				_itemHolder.removeChildAt(0);
+                clearItem(item);
 			}
 
             var numItems:int = Math.ceil(_height / _listItemHeight);
@@ -114,16 +114,30 @@ package com.bit101.components
             numItems = Math.max(numItems, 1);
 			for(var i:int = 0; i < numItems; i++)
 			{
-
 				item = new _listItemClass(_itemHolder, 0, i * _listItemHeight);
-				item.setSize(width, _listItemHeight);
-				item.defaultColor = _defaultColor;
-
-				item.selectedColor = _selectedColor;
-				item.rolloverColor = _rolloverColor;
-				item.addEventListener(MouseEvent.CLICK, onSelect);
+                initItem(item);
 			}
 		}
+
+        protected function clearItem(item:ListItem):void
+        {
+            item.removeEventListener(MouseEvent.CLICK, onSelect);
+            _itemHolder.removeChildAt(0);
+        }
+
+        protected function initItem(item:ListItem):void
+        {
+            item.setSize(width, _listItemHeight);
+            item.defaultColor = _defaultColor;
+
+            item.selectedColor = _selectedColor;
+            item.rolloverColor = _rolloverColor;
+
+            if (_selectable)
+            {
+                item.addEventListener(MouseEvent.CLICK, onSelect);
+            }
+        }
 
         protected function fillItems():void
         {
@@ -492,5 +506,16 @@ package com.bit101.components
             return _scrollbar.autoHide;
         }
 
-	}
+        public function get selectable():Boolean
+        {
+            return _selectable;
+        }
+
+        public function set selectable(value:Boolean):void
+        {
+            _selectable = value;
+            makeListItems();
+            invalidate();
+        }
+    }
 }
