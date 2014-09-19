@@ -45,7 +45,9 @@ package com.bit101.components
 		public static var LIST_ALTERNATE:uint = 0xF3F3F3;
 		public static var LIST_SELECTED:uint = 0xCCCCCC;
 		public static var LIST_ROLLOVER:uint = 0XDDDDDD;
-		
+		public static var FRAME_BORDER:uint = 0X666666;
+		public static var FRAME_BODY:uint = 0X666666;
+
 		public static var embedFonts:Boolean = true;
 		public static var fontName:String = "PF Ronda Seven";
 		public static var fontSize:Number = 8;
@@ -73,6 +75,8 @@ package com.bit101.components
 					Style.LIST_ALTERNATE = 0x393939;
 					Style.LIST_SELECTED = 0x666666;
 					Style.LIST_ROLLOVER = 0x777777;
+                    Style.FRAME_BODY = 0x666666;
+                    Style.FRAME_BORDER = 0x888888;
 					break;
 				case LIGHT:
 				default:
@@ -88,6 +92,8 @@ package com.bit101.components
 					Style.LIST_ALTERNATE = 0xF3F3F3;
 					Style.LIST_SELECTED = 0xCCCCCC;
 					Style.LIST_ROLLOVER = 0xDDDDDD;
+                    Style.FRAME_BODY = 0xF3F3F3;
+                    Style.FRAME_BORDER = 0xBBBBBB;
 					break;
 			}
 		}
