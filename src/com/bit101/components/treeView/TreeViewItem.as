@@ -8,6 +8,8 @@ package com.bit101.components.treeView
     import flash.display.DisplayObjectContainer;
     import flash.display.Sprite;
     import flash.events.MouseEvent;
+    import flash.geom.Rectangle;
+    import flash.text.TextFormat;
 
     /**
      * @history create 16.09.14 16:45
@@ -27,16 +29,21 @@ package com.bit101.components.treeView
         protected var _node:TreeViewNode;
         protected var _expandButton:DisplayObject;
         protected var _label:Label;
+        private var _estimatedWidth:Number;
 
         protected var _defaultColor:uint;
         protected var _selectedColor:uint;
         protected var _rolloverColor:uint;
 
+        protected var _defaultTextColor:uint;
+        protected var _selectedTextColor:uint;
+        protected var _rolloverTextColor:uint;
+
         protected var _isSelected:Boolean;
         protected var _isOvered:Boolean;
-        private var _highlightOnHover:Boolean;
+        protected var _highlightOnHover:Boolean;
 
-        private var _indentMultiplier:int;
+        protected var _indentSize:int;
 
         //---------------------------------------------------------------
         //
@@ -47,16 +54,21 @@ package com.bit101.components.treeView
         public function TreeViewItem(treeView:TreeView, parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number = 0)
         {
             _treeView = treeView;
+            _estimatedWidth = 0.0;
 
-            _defaultColor = Style.LIST_DEFAULT;
-            _selectedColor = Style.LIST_SELECTED;
-            _rolloverColor = Style.LIST_ROLLOVER;
+            _defaultColor = Style.TREE_VIEW_DEFAULT;
+            _selectedColor = Style.TREE_VIEW_SELECTED;
+            _rolloverColor = Style.TREE_VIEW_ROLLOVER;
+
+            _defaultTextColor = Style.LABEL_TEXT;
+            _selectedTextColor = Style.LABEL_TEXT;
+            _rolloverTextColor = Style.LABEL_TEXT;
 
             _isSelected = false;
             _isOvered = false;
             _highlightOnHover = true;
 
-            _indentMultiplier = 15;
+            _indentSize = 15;
 
             super(parent, xpos, ypos);
         }
@@ -164,21 +176,46 @@ package com.bit101.components.treeView
         {
             _expandButton.visible = _node.children && _node.children.length > 0;
 
-            _expandButton.x = ((_node.indent - 1) * _indentMultiplier) + 10;
+            _expandButton.x = ((_node.indent - 1) * _indentSize) + 10;
             _expandButton.y = 10;
             _expandButton.rotation = _node.isExpanded ? 0 : -90;
         }
 
         private function updateLabel():void
         {
+            var labelFormat:TextFormat = _label.textField.defaultTextFormat;
+
+            if(isSelected)
+            {
+                labelFormat.color = selectedTextColor;
+            }
+            else if(_isOvered)
+            {
+                labelFormat.color = rolloverTextColor;
+            }
+            else
+            {
+                labelFormat.color = defaultTextColor;
+            }
+
+            _label.textField.defaultTextFormat = labelFormat;
+            _label.textField.setTextFormat(labelFormat);
+
             _label.text = _node.name;
-            _label.x = ((_node.indent - 1) * _indentMultiplier) + 20;
+            _label.x = ((_node.indent - 1) * _indentSize) + 20;
+            _label.draw();
         }
 
         private function switchExpandButton():void
         {
             node.isExpanded ? node.collapse() : node.expand();
             _treeView.refresh();
+        }
+
+        private function estimateWidth():void
+        {
+            var labelBounds:Rectangle = _label.getBounds(this);
+            _estimatedWidth = labelBounds.right;
         }
 
         //---------------------------------------------------------------
@@ -239,15 +276,15 @@ package com.bit101.components.treeView
         {
             super.draw();
 
-            updateBackground();
-
             if (!_node)
             {
                 return;
             }
 
+            updateBackground();
             updateExpandButton();
             updateLabel();
+            estimateWidth();
         }
 
         public function select():void
@@ -297,7 +334,7 @@ package com.bit101.components.treeView
         public function set node(value:TreeViewNode):void
         {
             _node = value;
-            invalidate();
+            draw();
         }
 
         public function get defaultColor():uint
@@ -333,14 +370,47 @@ package com.bit101.components.treeView
             invalidate();
         }
 
-        public function get indentMultiplier():int
+        public function get defaultTextColor():uint
         {
-            return _indentMultiplier;
+            return _defaultTextColor;
         }
 
-        public function set indentMultiplier(value:int):void
+        public function set defaultTextColor(value:uint):void
         {
-            _indentMultiplier = value;
+            _defaultTextColor = value;
+            invalidate();
+        }
+
+        public function get selectedTextColor():uint
+        {
+            return _selectedTextColor;
+        }
+
+        public function set selectedTextColor(value:uint):void
+        {
+            _selectedTextColor = value;
+            invalidate();
+        }
+
+        public function get rolloverTextColor():uint
+        {
+            return _rolloverTextColor;
+        }
+
+        public function set rolloverTextColor(value:uint):void
+        {
+            _rolloverTextColor = value;
+            invalidate();
+        }
+
+        public function get indentSize():int
+        {
+            return _indentSize;
+        }
+
+        public function set indentSize(value:int):void
+        {
+            _indentSize = value;
             invalidate();
         }
 
@@ -359,6 +429,11 @@ package com.bit101.components.treeView
             _highlightOnHover = value;
             updateHighlightingOnHoverState();
             invalidate();
+        }
+
+        public function get estimatedWidth():Number
+        {
+            return _estimatedWidth;
         }
     }
 }

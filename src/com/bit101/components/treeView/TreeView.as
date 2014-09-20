@@ -1,5 +1,6 @@
 package com.bit101.components.treeView
 {
+    import com.bit101.components.Component;
     import com.bit101.components.ScrollPane;
     import com.bit101.components.Style;
     import com.bit101.components.VBox;
@@ -14,7 +15,7 @@ package com.bit101.components.treeView
      * @history create 15.09.14 14:59
      * @author Sergey Smirnov
      */
-    public class TreeView extends ScrollPane
+    public class TreeView extends Component
     {
         //------------------------------------------------
         //      Class constants
@@ -26,6 +27,7 @@ package com.bit101.components.treeView
 
         protected var _data:Object;
         protected var _rootNode:TreeViewNode;
+        protected var _scrollPane:ScrollPane;
         protected var _group:VBox;
         protected var _activeNodes:Vector.<TreeViewNode>;
         protected var _inactiveItems:Vector.<TreeViewItem>;
@@ -38,12 +40,20 @@ package com.bit101.components.treeView
         protected var _alternateRows:Boolean;
         protected var _highlightOnHover:Boolean;
         protected var _selectable:Boolean;
+        protected var _indentSize:Number;
+        protected var _estimatedContentHeight:Number;
+        protected var _estimatedContentWidth:Number;
+        protected var _itemsToDisplay:Vector.<TreeViewItem>;
 
         // colors
         protected var _defaultColor:uint;
         protected var _alternateColor:uint;
         protected var _selectedColor:uint;
         protected var _rolloverColor:uint;
+        protected var _defaultTextColor:uint;
+        protected var _selectedTextColor:uint;
+        protected var _rolloverTextColor:uint;
+        protected var _alternateTextColor:uint;
         //
 
         //---------------------------------------------------------------
@@ -58,17 +68,23 @@ package com.bit101.components.treeView
             _itemHeight = 20;
             _allowMultiSelection = false;
             _canMultiSelect = false;
-            _selectedItems = new <TreeViewItem>[];
             _multiSelectionKeyCodes = new <uint>[Keyboard.CONTROL, Keyboard.COMMAND];
             _alternateRows = false;
             _highlightOnHover = true;
             _selectable = true;
+            _indentSize = 20.0;
+            _estimatedContentHeight = 0.0;
+            _estimatedContentWidth = 0.0;
 
             // init colors
-            _defaultColor = Style.LIST_DEFAULT;
-            _alternateColor = Style.LIST_ALTERNATE;
-            _selectedColor = Style.LIST_SELECTED;
-            _rolloverColor = Style.LIST_ROLLOVER;
+            _defaultColor = Style.TREE_VIEW_DEFAULT;
+            _alternateColor = Style.TREE_VIEW_ALTERNATE;
+            _selectedColor = Style.TREE_VIEW_SELECTED;
+            _rolloverColor = Style.TREE_VIEW_ROLLOVER;
+            _defaultTextColor = Style.LABEL_TEXT;
+            _selectedTextColor = Style.LABEL_TEXT;
+            _rolloverTextColor = Style.LABEL_TEXT;
+            _alternateTextColor = Style.LABEL_TEXT;
             //
 
             addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
@@ -89,16 +105,15 @@ package com.bit101.components.treeView
         {
             super.init();
 
-            this.dragContent = false;
-            this.autoHideScrollBar = true;
-            setSize(200, 400);
-
             _rootNode = getNodeFrom({name: "Root"});
 
             _activeNodes = new <TreeViewNode>[];
             _inactiveItems = new <TreeViewItem>[];
+            _selectedItems = new <TreeViewItem>[];
+            _itemsToDisplay = new <TreeViewItem>[];
 
             initEventListeners();
+            setSize(200, 300);
         }
 
         protected function disposeAllActiveItems():void
@@ -138,12 +153,14 @@ package com.bit101.components.treeView
 
         protected function initEventListeners():void
         {
-
+            this.addEventListener(Event.RESIZE, onResize);
+            this.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
         }
 
         protected function removeEventListeners():void
         {
-
+            this.removeEventListener(Event.RESIZE, onResize);
+            this.removeEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
         }
 
         /**
@@ -152,12 +169,24 @@ package com.bit101.components.treeView
         override protected function addChildren():void
         {
             super.addChildren();
+
+            _scrollPane = createScrollPane();
             _group = createGroup();
+        }
+
+        protected function createScrollPane():ScrollPane
+        {
+            var result:ScrollPane = new ScrollPane(this);
+            result.color = Style.TREE_VIEW_BACKGROUND;
+            result.autoHideScrollBar = true;
+            result.dragContent = false;
+
+            return result;
         }
 
         protected function createGroup():VBox
         {
-            var result:VBox = new VBox(content);
+            var result:VBox = new VBox(_scrollPane.content);
             result.spacing = 0;
 
             return result;
@@ -202,8 +231,37 @@ package com.bit101.components.treeView
 
             deactivateItems();
             processNode(_rootNode);
+            estimateContentHeight();
+            prepareItems();
             displayItems();
             removeUnusedItems();
+        }
+
+        protected function estimateContentHeight():void
+        {
+            _estimatedContentHeight = (_activeNodes.length) * _itemHeight + (_activeNodes.length - 1) * _group.spacing;
+        }
+
+        protected function prepareItems():void
+        {
+            var item:TreeViewItem;
+            var childNode:TreeViewNode;
+
+            _estimatedContentWidth = width;
+
+            for (var i:int = 0; i < _activeNodes.length; i++)
+            {
+                childNode = _activeNodes[i];
+                item = createItem(i);
+                item.highlightOnHover = highlightOnHover;
+                item.indentSize = indentSize;
+                item.node = childNode;
+
+                calculateItemColors(item, i);
+
+                _estimatedContentWidth = Math.max(_estimatedContentWidth, item.estimatedWidth);
+                _itemsToDisplay.push(item);
+            }
         }
 
         protected function deactivateItems():void
@@ -257,16 +315,16 @@ package com.bit101.components.treeView
             var item:TreeViewItem;
             var childNode:TreeViewNode;
 
+            if (_estimatedContentHeight <= height)
+            {
+                _scrollPane.vScrollbar.visible = false;
+            }
+
             for (var i:int = 0; i < _activeNodes.length; i++)
             {
                 childNode = _activeNodes[i];
-                item = createItem(i);
-                item.highlightOnHover = highlightOnHover;
-
-                calculateItemColors(item, i);
+                item = _itemsToDisplay[i];
                 calculateItemSize(item);
-
-                item.node = childNode;
 
                 if (!_group.contains(item))
                 {
@@ -284,6 +342,8 @@ package com.bit101.components.treeView
                     item.removeEventListener(MouseEvent.CLICK, onItemClick);
                 }
             }
+
+            _itemsToDisplay = new <TreeViewItem>[];
         }
 
         protected function calculateItemColors(item:TreeViewItem, index:int):void
@@ -291,20 +351,25 @@ package com.bit101.components.treeView
             if (alternateRows && index % 2 == 0)
             {
                 item.defaultColor = alternateColor;
+                item.defaultTextColor = alternateTextColor;
             }
             else
             {
                 item.defaultColor = defaultColor;
+                item.defaultTextColor = defaultTextColor;
             }
 
             item.selectedColor = selectedColor;
+            item.selectedTextColor = selectedTextColor;
+
             item.rolloverColor = rolloverColor;
+            item.rolloverTextColor = rolloverTextColor;
         }
 
         protected function calculateItemSize(item:TreeViewItem):void
         {
-            var vSrollWidth:Number = _vScrollbar.visible ? _vScrollbar.width : 0.0;
-            item.setSize(width - vSrollWidth, _itemHeight);
+            var itemWidth:Number = _estimatedContentWidth;
+            item.setSize(itemWidth, _itemHeight);
         }
 
         protected function createItem(index:int):TreeViewItem
@@ -433,6 +498,17 @@ package com.bit101.components.treeView
             updateMultiSelectionState();
         }
 
+        protected function onResize(event:Event):void
+        {
+            _scrollPane.setSize(width, height);
+        }
+
+        protected function onMouseWheel(event:MouseEvent):void
+        {
+            _scrollPane.vScrollbar.value -= event.delta * 3;
+            _scrollPane.draw();
+        }
+
         private function onItemClick(event:MouseEvent):void
         {
             var item:TreeViewItem = TreeViewItem(event.currentTarget);
@@ -467,7 +543,8 @@ package com.bit101.components.treeView
         override public function draw():void
         {
             super.draw();
-            refresh();
+            processView();
+            _scrollPane.update();
         }
 
         /**
@@ -629,12 +706,18 @@ package com.bit101.components.treeView
             }
         }
 
+        public function addToRoot(data:Object):void
+        {
+            var node:TreeViewNode = processNodeData(data);
+            _rootNode.addNode(node);
+        }
+
         /**
          * Refresh the tree view.
          */
         public function refresh():void
         {
-            processView();
+            invalidate();
         }
 
         /**
@@ -647,7 +730,7 @@ package com.bit101.components.treeView
             disposeAllInactiveItems();
             disposeNodeHierarchy(_rootNode);
 
-            content.removeChild(_group);
+            _scrollPane.content.removeChild(_group);
 
             _itemClass = null;
             _group = null;
@@ -831,6 +914,50 @@ package com.bit101.components.treeView
             invalidate();
         }
 
+        public function get defaultTextColor():uint
+        {
+            return _defaultTextColor;
+        }
+
+        public function set defaultTextColor(value:uint):void
+        {
+            _defaultTextColor = value;
+            invalidate();
+        }
+
+        public function get selectedTextColor():uint
+        {
+            return _selectedTextColor;
+        }
+
+        public function set selectedTextColor(value:uint):void
+        {
+            _selectedTextColor = value;
+            invalidate();
+        }
+
+        public function get rolloverTextColor():uint
+        {
+            return _rolloverTextColor;
+        }
+
+        public function set rolloverTextColor(value:uint):void
+        {
+            _rolloverTextColor = value;
+            invalidate();
+        }
+
+        public function get alternateTextColor():uint
+        {
+            return _alternateTextColor;
+        }
+
+        public function set alternateTextColor(value:uint):void
+        {
+            _alternateTextColor = value;
+            invalidate();
+        }
+
         public function get highlightOnHover():Boolean
         {
             return _highlightOnHover;
@@ -850,6 +977,17 @@ package com.bit101.components.treeView
         public function set selectable(value:Boolean):void
         {
             _selectable = value;
+            invalidate();
+        }
+
+        public function get indentSize():Number
+        {
+            return _indentSize;
+        }
+
+        public function set indentSize(value:Number):void
+        {
+            _indentSize = value;
             invalidate();
         }
     }

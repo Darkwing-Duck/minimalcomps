@@ -37,8 +37,8 @@ package com.bit101.components
 	
 	public class ScrollPane extends Panel
 	{
-		protected var _vScrollbar:VScrollBar;
-		protected var _hScrollbar:HScrollBar;
+		private var _vScrollbar:VScrollBar;
+		private var _hScrollbar:HScrollBar;
 		protected var _corner:Shape;
 		protected var _dragContent:Boolean = true;
 		
@@ -97,10 +97,13 @@ package com.bit101.components
 		override public function draw():void
 		{
 			super.draw();
-			
-			var vPercent:Number = (_height - 10) / content.height;
-			var hPercent:Number = (_width - 10) / content.width; 
-			
+
+            var vScrollBarShift:Number = _vScrollbar.visible ? 10 : 0;
+            var hScrollBarShift:Number = _hScrollbar.visible ? 10 : 0;
+
+			var vPercent:Number = (_height - vScrollBarShift) / content.height;
+			var hPercent:Number = (_width - hScrollBarShift) / content.width;
+
 			_vScrollbar.x = width - 10;
 			_hScrollbar.y = height - 10;
 			
@@ -111,8 +114,8 @@ package com.bit101.components
 			}
 			else
 			{
-				_vScrollbar.height = height - 10;
-				_mask.height = height - 10;
+				_vScrollbar.height = height - vScrollBarShift;
+				_mask.height = height - vScrollBarShift;
 			}
 			if(vPercent >= 1)
 			{
@@ -121,19 +124,19 @@ package com.bit101.components
 			}
 			else
 			{
-				_hScrollbar.width = width - 10;
-				_mask.width = width - 10;
+				_hScrollbar.width = width - hScrollBarShift;
+				_mask.width = width - hScrollBarShift;
 			}
 			_vScrollbar.setThumbPercent(vPercent);
-			_vScrollbar.maximum = Math.max(0, content.height - _height + 10);
-			_vScrollbar.pageSize = _height - 10;
+			_vScrollbar.maximum = Math.max(0, content.height - _height + vScrollBarShift);
+			_vScrollbar.pageSize = _height - vScrollBarShift;
 			
 			_hScrollbar.setThumbPercent(hPercent);
-			_hScrollbar.maximum = Math.max(0, content.width - _width + 10);
-			_hScrollbar.pageSize = _width - 10;
+			_hScrollbar.maximum = Math.max(0, content.width - _width + vScrollBarShift);
+			_hScrollbar.pageSize = _width - hScrollBarShift;
 			
-			_corner.x = width - 10;
-			_corner.y = height - 10;
+			_corner.x = width - hScrollBarShift;
+			_corner.y = height - vScrollBarShift;
 			_corner.visible = (hPercent < 1) && (vPercent < 1);
 			content.x = -_hScrollbar.value;
 			content.y = -_vScrollbar.value;
@@ -220,6 +223,14 @@ package com.bit101.components
             return _vScrollbar.autoHide;
         }
 
+        public function get vScrollbar():VScrollBar
+        {
+            return _vScrollbar;
+        }
 
-	}
+        public function get hScrollbar():HScrollBar
+        {
+            return _hScrollbar;
+        }
+    }
 }

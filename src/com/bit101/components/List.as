@@ -1,4 +1,4 @@
-﻿/**
+﻿ /**
  * List.as
  * Keith Peters
  * version 0.9.10
@@ -111,7 +111,7 @@ package com.bit101.components
 
             var numItems:int = Math.ceil(_height / _listItemHeight);
 			numItems = Math.min(numItems, _items.length);
-            numItems = Math.max(numItems, 0);
+            numItems = Math.max(numItems, 1);
 			for(var i:int = 0; i < numItems; i++)
 			{
 				item = new _listItemClass(_itemHolder, 0, i * _listItemHeight);
@@ -240,7 +240,7 @@ package com.bit101.components
 			_items.push(item);
 			invalidate();
 			makeListItems();
-            fillItems();
+      fillItems();
 		}
 		
 		/**
@@ -254,8 +254,8 @@ package com.bit101.components
 			index = Math.min(_items.length, index);
 			_items.splice(index, 0, item);
 			invalidate();
-            makeListItems();
-            fillItems();
+      makeListItems();
+      fillItems();
 		}
 		
 		/**

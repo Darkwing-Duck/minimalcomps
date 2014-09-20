@@ -45,8 +45,19 @@ package com.bit101.components
 		public static var LIST_ALTERNATE:uint = 0xF3F3F3;
 		public static var LIST_SELECTED:uint = 0xCCCCCC;
 		public static var LIST_ROLLOVER:uint = 0XDDDDDD;
+
+        // frame
 		public static var FRAME_BORDER:uint = 0X666666;
 		public static var FRAME_BODY:uint = 0X666666;
+        //
+
+        // tree view
+        public static var TREE_VIEW_BACKGROUND:uint = 0xF3F3F3;
+        public static var TREE_VIEW_ALTERNATE:uint = 0XDDDDDD;
+        public static var TREE_VIEW_DEFAULT:uint = 0xF3F3F3;
+        public static var TREE_VIEW_SELECTED:uint = 0X666666;
+        public static var TREE_VIEW_ROLLOVER:uint = 0X666666;
+        //
 
 		public static var embedFonts:Boolean = true;
 		public static var fontName:String = "PF Ronda Seven";
@@ -77,6 +88,11 @@ package com.bit101.components
 					Style.LIST_ROLLOVER = 0x777777;
                     Style.FRAME_BODY = 0x666666;
                     Style.FRAME_BORDER = 0x888888;
+                    Style.TREE_VIEW_BACKGROUND = 0x666666;
+                    Style.TREE_VIEW_ALTERNATE = 0x5C5C5C;
+                    Style.TREE_VIEW_DEFAULT = 0x666666;
+                    Style.TREE_VIEW_SELECTED = 0x555555;
+                    Style.TREE_VIEW_ROLLOVER = 0x7A7A7A;
 					break;
 				case LIGHT:
 				default:
@@ -94,6 +110,11 @@ package com.bit101.components
 					Style.LIST_ROLLOVER = 0xDDDDDD;
                     Style.FRAME_BODY = 0xF3F3F3;
                     Style.FRAME_BORDER = 0xBBBBBB;
+                    Style.TREE_VIEW_BACKGROUND = 0xF3F3F3;
+                    Style.TREE_VIEW_ALTERNATE = 0xE8E8E8;
+                    Style.TREE_VIEW_DEFAULT = 0xF3F3F3;
+                    Style.TREE_VIEW_SELECTED = 0x999999;
+                    Style.TREE_VIEW_ROLLOVER = 0xCCCCCC;
 					break;
 			}
 		}
