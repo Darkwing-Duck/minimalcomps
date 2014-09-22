@@ -32,10 +32,11 @@ package com.bit101.components.treeView
         protected var _activeNodes:Vector.<TreeViewNode>;
         protected var _inactiveItems:Vector.<TreeViewItem>;
         protected var _itemClass:Class;
+        private var _nodeClass:Class;
         protected var _itemHeight:int;
         protected var _canMultiSelect:Boolean;
         protected var _allowMultiSelection:Boolean;
-        protected var _selectedItems:Vector.<TreeViewItem>;
+        private var _selectedItems:Vector.<TreeViewItem>;
         protected var _multiSelectionKeyCodes:Vector.<uint>;
         protected var _alternateRows:Boolean;
         protected var _highlightOnHover:Boolean;
@@ -56,6 +57,9 @@ package com.bit101.components.treeView
         protected var _alternateTextColor:uint;
         //
 
+        protected var _onItemSelectedHandler:Function;
+        protected var _onEmptyClickHandler:Function;
+
         //---------------------------------------------------------------
         //
         //      CONSTRUCTOR
@@ -65,6 +69,7 @@ package com.bit101.components.treeView
         public function TreeView(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number = 0)
         {
             _itemClass = TreeViewItem;
+            _nodeClass = TreeViewNode;
             _itemHeight = 20;
             _allowMultiSelection = false;
             _canMultiSelect = false;
@@ -155,12 +160,14 @@ package com.bit101.components.treeView
         {
             this.addEventListener(Event.RESIZE, onResize);
             this.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
+            _scrollPane.background.addEventListener(MouseEvent.CLICK, onListEmptyClick);
         }
 
         protected function removeEventListeners():void
         {
             this.removeEventListener(Event.RESIZE, onResize);
             this.removeEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
+            _scrollPane.background.addEventListener(MouseEvent.CLICK, onListEmptyClick);
         }
 
         /**
@@ -199,9 +206,8 @@ package com.bit101.components.treeView
 
         protected function getNodeFrom(data:Object):TreeViewNode
         {
-            var result:TreeViewNode = new TreeViewNode();
-            result.name = data.name ? data.name : "";
-            result.tag = data.tag ? data.tag : "";
+            var result:TreeViewNode = new _nodeClass();
+            result.updateFromObject(data);
 
             return result;
         }
@@ -428,6 +434,7 @@ package com.bit101.components.treeView
             else if (item.isSelected && _canMultiSelect)
             {
                 unselectItem(item);
+
                 return;
             }
 
@@ -437,14 +444,15 @@ package com.bit101.components.treeView
 
         protected function unselectItem(item:TreeViewItem):void
         {
-            item.unselect();
-
             var index:int = _selectedItems.indexOf(item);
 
-            if (index >= 0)
+            if (index < 0)
             {
-                _selectedItems.splice(index, 1);
+                return;
             }
+
+            item.unselect();
+            _selectedItems.splice(index, 1);
         }
 
         protected function getItemByNode(node:TreeViewNode):TreeViewItem
@@ -509,10 +517,25 @@ package com.bit101.components.treeView
             _scrollPane.draw();
         }
 
+        protected function onListEmptyClick(event:MouseEvent):void
+        {
+            unselectAll();
+
+            if (_onEmptyClickHandler)
+            {
+                _onEmptyClickHandler();
+            }
+        }
+
         private function onItemClick(event:MouseEvent):void
         {
             var item:TreeViewItem = TreeViewItem(event.currentTarget);
             selectItem(item);
+
+            if (_onItemSelectedHandler)
+            {
+                _onItemSelectedHandler(item);
+            }
         }
 
         protected function onKeyDown(event:KeyboardEvent):void
@@ -630,7 +653,7 @@ package com.bit101.components.treeView
         }
 
         /**
-         * Find all child nodes in hierarchy with passed name.
+         * Find all nodes in hierarchy with passed name.
          *
          * @param nodeName - tag of node
          * @return Vector.<TreeViewNode>
@@ -641,7 +664,19 @@ package com.bit101.components.treeView
         }
 
         /**
-         * Find first child node in hierarchy with passed tag.
+         * Find first node in hierarchy with passed property.
+         *
+         * @param propertyName - name of node property
+         * @param propertyValue - value of node property
+         * @return TreeViewNode
+         */
+        public function findNodeByProperty(propertyName:String, propertyValue:Object):TreeViewNode
+        {
+            return _rootNode.findNodeByProperty(propertyName, propertyValue);
+        }
+
+        /**
+         * Find child node in hierarchy with passed tag.
          *
          * @param nodeTag - tag of node
          * @return TreeViewNode
@@ -706,10 +741,42 @@ package com.bit101.components.treeView
             }
         }
 
+        public function updateNode(node:TreeViewNode):void
+        {
+            var item:TreeViewItem = getItemByNode(node);
+            item.update();
+        }
+
         public function addToRoot(data:Object):void
         {
             var node:TreeViewNode = processNodeData(data);
             _rootNode.addNode(node);
+            refresh();
+        }
+
+        public function removeNode(node:TreeViewNode, needRefresh:Boolean = true):void
+        {
+            if (node.parent)
+            {
+                node.parent.removeNode(node);
+                node.dispose();
+                node = null;
+            }
+
+            if (needRefresh)
+            {
+                refresh();
+            }
+        }
+
+        public function removeNodes(nodes:Vector.<TreeViewNode>):void
+        {
+            for each (var node:TreeViewNode in nodes)
+            {
+                removeNode(node);
+            }
+
+            refresh();
         }
 
         /**
@@ -805,6 +872,25 @@ package com.bit101.components.treeView
             }
 
             _itemClass = value;
+            invalidate();
+        }
+
+        /**
+         * Custom subclass of TreeViewNode.
+         */
+        public function get nodeClass():Class
+        {
+            return _nodeClass;
+        }
+
+        public function set nodeClass(value:Class):void
+        {
+            if (_nodeClass == value)
+            {
+                return;
+            }
+
+            _nodeClass = value;
             invalidate();
         }
 
@@ -989,6 +1075,31 @@ package com.bit101.components.treeView
         {
             _indentSize = value;
             invalidate();
+        }
+
+        public function get onItemSelectedHandler():Function
+        {
+            return _onItemSelectedHandler;
+        }
+
+        public function set onItemSelectedHandler(value:Function):void
+        {
+            _onItemSelectedHandler = value;
+        }
+
+        public function get onEmptyClickHandler():Function
+        {
+            return _onEmptyClickHandler;
+        }
+
+        public function set onEmptyClickHandler(value:Function):void
+        {
+            _onEmptyClickHandler = value;
+        }
+
+        public function get selectedItems():Vector.<TreeViewItem>
+        {
+            return _selectedItems;
         }
     }
 }

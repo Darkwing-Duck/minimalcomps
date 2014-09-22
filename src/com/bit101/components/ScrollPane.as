@@ -37,8 +37,8 @@ package com.bit101.components
 	
 	public class ScrollPane extends Panel
 	{
-		private var _vScrollbar:VScrollBar;
-		private var _hScrollbar:HScrollBar;
+        protected var _vScrollbar:VScrollBar;
+        protected var _hScrollbar:HScrollBar;
 		protected var _corner:Shape;
 		protected var _dragContent:Boolean = true;
 		

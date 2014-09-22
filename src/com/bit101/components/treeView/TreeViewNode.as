@@ -79,6 +79,12 @@ package com.bit101.components.treeView
         //
         //---------------------------------------------------------------
 
+        public function updateFromObject(data:Object):void
+        {
+            _name = data.name ? data.name : "";
+            _tag = data.tag ? data.tag : "";
+        }
+
         public function updateIndents():void
         {
             updateIndent();
@@ -136,7 +142,7 @@ package com.bit101.components.treeView
          */
         public function expand():Boolean
         {
-            if (isExpanded)
+            if (isExpanded || children.length <= 0)
             {
                 return false;
             }
@@ -171,7 +177,7 @@ package com.bit101.components.treeView
          */
         public function collapse():Boolean
         {
-            if (!isExpanded)
+            if (!isExpanded || children.length <= 0)
             {
                 return false;
             }
@@ -228,6 +234,33 @@ package com.bit101.components.treeView
                 childNode = _children[i];
 
                 if (childNode.name == nodeName)
+                {
+                    return childNode;
+                }
+
+                i++;
+            }
+
+            return null;
+        }
+
+        /**
+         * Find first child node in hierarchy with passed property.
+         *
+         * @param propertyName - name of node property
+         * @param propertyValue - value of node property
+         * @return TreeViewNode
+         */
+        public function getChildNodeByProperty(propertyName:String, propertyValue:Object):TreeViewNode
+        {
+            var i:int = 0;
+            var childNode:TreeViewNode;
+
+            while (i < _children.length)
+            {
+                childNode = _children[i];
+
+                if (childNode[propertyName] && childNode[propertyName] == propertyValue)
                 {
                     return childNode;
                 }
@@ -342,6 +375,30 @@ package com.bit101.components.treeView
         }
 
         /**
+         * Find first node in hierarchy with passed property.
+         *
+         * @param propertyName - name of node property
+         * @param propertyValue - value of node property
+         * @return TreeViewNode
+         */
+        public function findNodeByProperty(propertyName:String, propertyValue:Object):TreeViewNode
+        {
+            var i:int = 0;
+            var childNode:TreeViewNode;
+            var result:TreeViewNode = getChildNodeByProperty(propertyName, propertyValue);
+
+            while (i < _children.length && !result)
+            {
+                childNode = _children[i];
+                result = childNode.findNodeByProperty(propertyName, propertyValue);
+
+                i++;
+            }
+
+            return result;
+        }
+
+        /**
          * Find all child nodes in hierarchy with passed name.
          *
          * @param nodeName - tag of node
@@ -408,6 +465,11 @@ package com.bit101.components.treeView
             }
 
             return result;
+        }
+
+        public function update():void
+        {
+            //
         }
 
         /**
@@ -479,11 +541,6 @@ package com.bit101.components.treeView
         public function get children():Vector.<TreeViewNode>
         {
             return _children;
-        }
-
-        public function set children(value:Vector.<TreeViewNode>):void
-        {
-            _children = value;
         }
 
         public function get isRoot():Boolean

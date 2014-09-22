@@ -233,7 +233,6 @@ package com.bit101.components.treeView
         {
             removeListeners();
             _isOvered = false;
-            _isSelected = false;
         }
 
         private function onExpandButtonClick(event:MouseEvent):void
@@ -281,6 +280,8 @@ package com.bit101.components.treeView
                 return;
             }
 
+            _node.update();
+
             updateBackground();
             updateExpandButton();
             updateLabel();
@@ -306,6 +307,11 @@ package com.bit101.components.treeView
             }
 
             _isSelected = false;
+            invalidate();
+        }
+
+        public function update():void
+        {
             invalidate();
         }
 

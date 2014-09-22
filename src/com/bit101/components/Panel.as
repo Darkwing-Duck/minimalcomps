@@ -35,7 +35,7 @@ package com.bit101.components
 	public class Panel extends Component
 	{
 		protected var _mask:Sprite;
-		protected var _background:Sprite;
+        protected var _background:Sprite;
 		protected var _color:int = -1;
 		protected var _shadow:Boolean = true;
 		protected var _gridSize:int = 10;
@@ -239,5 +239,10 @@ package com.bit101.components
 		{
 			return _gridColor;
 		}
-	}
+
+        public function get background():Sprite
+        {
+            return _background;
+        }
+    }
 }
