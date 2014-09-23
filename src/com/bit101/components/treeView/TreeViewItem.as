@@ -243,13 +243,13 @@ package com.bit101.components.treeView
         protected function onMouseOver(event:MouseEvent):void
         {
             _isOvered = true;
-            invalidate();
+            draw();
         }
 
         protected function onMouseOut(event:MouseEvent):void
         {
             _isOvered = false;
-            invalidate();
+            draw();
         }
 
         protected function onDoubleClick(event:MouseEvent):void
@@ -294,7 +294,7 @@ package com.bit101.components.treeView
             }
 
             _isSelected = true;
-            invalidate();
+            draw();
         }
 
         public function unselect():void
@@ -305,7 +305,7 @@ package com.bit101.components.treeView
             }
 
             _isSelected = false;
-            invalidate();
+            draw();
         }
 
         public function update():void
@@ -349,7 +349,7 @@ package com.bit101.components.treeView
         public function set defaultColor(value:uint):void
         {
             _defaultColor = value;
-            invalidate();
+            draw();
         }
 
         public function get selectedColor():uint
@@ -360,7 +360,7 @@ package com.bit101.components.treeView
         public function set selectedColor(value:uint):void
         {
             _selectedColor = value;
-            invalidate();
+            draw();
         }
 
         public function get rolloverColor():uint
@@ -371,7 +371,7 @@ package com.bit101.components.treeView
         public function set rolloverColor(value:uint):void
         {
             _rolloverColor = value;
-            invalidate();
+            draw();
         }
 
         public function get defaultTextColor():uint
@@ -382,7 +382,7 @@ package com.bit101.components.treeView
         public function set defaultTextColor(value:uint):void
         {
             _defaultTextColor = value;
-            invalidate();
+            draw();
         }
 
         public function get selectedTextColor():uint
@@ -393,7 +393,7 @@ package com.bit101.components.treeView
         public function set selectedTextColor(value:uint):void
         {
             _selectedTextColor = value;
-            invalidate();
+            draw();
         }
 
         public function get rolloverTextColor():uint
@@ -404,7 +404,7 @@ package com.bit101.components.treeView
         public function set rolloverTextColor(value:uint):void
         {
             _rolloverTextColor = value;
-            invalidate();
+            draw();
         }
 
         public function get indentSize():int
@@ -415,7 +415,7 @@ package com.bit101.components.treeView
         public function set indentSize(value:int):void
         {
             _indentSize = value;
-            invalidate();
+            draw();
         }
 
         public function get isSelected():Boolean
@@ -432,7 +432,7 @@ package com.bit101.components.treeView
         {
             _highlightOnHover = value;
             updateHighlightingOnHoverState();
-            invalidate();
+            draw();
         }
 
         public function get estimatedWidth():Number

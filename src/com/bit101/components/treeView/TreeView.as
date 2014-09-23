@@ -58,8 +58,8 @@ package com.bit101.components.treeView
         //
 
         protected var _onItemSelectedHandler:Function;
-        protected var _onEmptyClickHandler:Function;
-        private var _nodesSortFunction:Function;
+        protected var _onItemUnselectedHandler:Function;
+        protected var _nodesSortFunction:Function;
 
         //---------------------------------------------------------------
         //
@@ -484,6 +484,11 @@ package com.bit101.components.treeView
 
             _selectedItems.push(item);
             item.select();
+
+            if (_onItemSelectedHandler)
+            {
+                _onItemSelectedHandler(item);
+            }
         }
 
         protected function unselectItem(item:TreeViewItem):void
@@ -497,6 +502,11 @@ package com.bit101.components.treeView
 
             item.unselect();
             _selectedItems.splice(index, 1);
+
+            if (_onItemUnselectedHandler)
+            {
+                _onItemUnselectedHandler(item);
+            }
         }
 
         protected function getItemByNode(node:TreeViewNode):TreeViewItem
@@ -564,22 +574,12 @@ package com.bit101.components.treeView
         protected function onListEmptyClick(event:MouseEvent):void
         {
             unselectAll();
-
-            if (_onEmptyClickHandler)
-            {
-                _onEmptyClickHandler();
-            }
         }
 
         private function onItemClick(event:MouseEvent):void
         {
             var item:TreeViewItem = TreeViewItem(event.currentTarget);
             selectItem(item);
-
-            if (_onItemSelectedHandler)
-            {
-                _onItemSelectedHandler(item);
-            }
         }
 
         protected function onKeyDown(event:KeyboardEvent):void
@@ -760,6 +760,12 @@ package com.bit101.components.treeView
             selectItem(item);
         }
 
+        public function unselectNode(node:TreeViewNode):void
+        {
+            var item:TreeViewItem = getItemByNode(node);
+            unselectItem(item);
+        }
+
         /**
          * Select passed nodes and expand parent hierarchy.
          * If allowMultiselection is false, that will be selected only one node.
@@ -781,7 +787,30 @@ package com.bit101.components.treeView
 
             for each (var node:TreeViewNode in nodes)
             {
+                if (hasSelectedNode(node))
+                {
+                    continue;
+                }
+
                 selectNode(node);
+            }
+        }
+
+        public function unselectNodes(nodes:Vector.<TreeViewNode>):void
+        {
+            if (nodes.length <= 0)
+            {
+                return;
+            }
+
+            for each (var node:TreeViewNode in nodes)
+            {
+                if (!hasSelectedNode(node))
+                {
+                    continue;
+                }
+
+                unselectNode(node);
             }
         }
 
@@ -791,18 +820,30 @@ package com.bit101.components.treeView
             item.update();
         }
 
-        public function addToRoot(data:Object):void
+        public function hasSelectedNode(node:TreeViewNode):Boolean
+        {
+            var item:TreeViewItem = getItemByNode(node);
+            var index:int = _selectedItems.indexOf(item);
+
+            return index >= 0;
+        }
+
+        public function addToRoot(data:Object):TreeViewNode
         {
             var node:TreeViewNode = processNodeData(data);
             _rootNode.addNode(node);
             refresh();
+
+            return node;
         }
 
-        public function addToNode(data:Object, parentNode:TreeViewNode):void
+        public function addToNode(data:Object, parentNode:TreeViewNode):TreeViewNode
         {
             var childNode:TreeViewNode = processNodeData(data);
             parentNode.addNode(childNode);
             refresh();
+
+            return childNode;
         }
 
         public function removeNode(node:TreeViewNode, needRefresh:Boolean = true):void
@@ -904,7 +945,7 @@ package com.bit101.components.treeView
             }
 
             processData();
-            invalidate();
+            refresh();
         }
 
         /**
@@ -1138,14 +1179,14 @@ package com.bit101.components.treeView
             _onItemSelectedHandler = value;
         }
 
-        public function get onEmptyClickHandler():Function
+        public function get onItemUnselectedHandler():Function
         {
-            return _onEmptyClickHandler;
+            return _onItemUnselectedHandler;
         }
 
-        public function set onEmptyClickHandler(value:Function):void
+        public function set onItemUnselectedHandler(value:Function):void
         {
-            _onEmptyClickHandler = value;
+            _onItemUnselectedHandler = value;
         }
 
         public function get selectedItems():Vector.<TreeViewItem>
