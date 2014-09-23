@@ -280,8 +280,6 @@ package com.bit101.components.treeView
                 return;
             }
 
-            _node.update();
-
             updateBackground();
             updateExpandButton();
             updateLabel();

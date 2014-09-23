@@ -107,13 +107,42 @@ package com.bit101.components.treeView
                 node.parent.removeNode(node);
             }
 
+            node.root = this.root;
+            node.parent = this;
             _children.push(node);
+            updateNodesIndex();
+
+            node.onAddedInHierarchy();
+        }
+
+        public function addNodeAt(node:TreeViewNode, index:int):void
+        {
+            if (node.parent)
+            {
+                node.parent.removeNode(node);
+            }
 
             node.root = this.root;
             node.parent = this;
-            node.index = _children.length - 1;
+
+            _children.splice(index, 0, node);
+            updateNodesIndex();
 
             node.onAddedInHierarchy();
+        }
+
+        protected function updateNodesIndex():void
+        {
+            var i:int = 0;
+            var node:TreeViewNode;
+
+            while (i < _children.length)
+            {
+                node = _children[i];
+                node.index = i;
+
+                i++;
+            }
         }
 
         /**
@@ -135,6 +164,7 @@ package com.bit101.components.treeView
             node.index = 0;
 
             _children.splice(nodeIndex, 1);
+            updateNodesIndex();
         }
 
         /**

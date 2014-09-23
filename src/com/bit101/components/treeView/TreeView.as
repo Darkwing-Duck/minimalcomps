@@ -59,6 +59,7 @@ package com.bit101.components.treeView
 
         protected var _onItemSelectedHandler:Function;
         protected var _onEmptyClickHandler:Function;
+        private var _nodesSortFunction:Function;
 
         //---------------------------------------------------------------
         //
@@ -80,6 +81,7 @@ package com.bit101.components.treeView
             _indentSize = 20.0;
             _estimatedContentHeight = 0.0;
             _estimatedContentWidth = 0.0;
+            _nodesSortFunction = sortNodesByIndex;
 
             // init colors
             _defaultColor = Style.TREE_VIEW_DEFAULT;
@@ -237,10 +239,30 @@ package com.bit101.components.treeView
 
             deactivateItems();
             processNode(_rootNode);
+            updateNodes();
+            sortNodes();
             estimateContentHeight();
             prepareItems();
             displayItems();
             removeUnusedItems();
+        }
+
+        protected function updateNodes():void
+        {
+            for each (var node:TreeViewNode in _activeNodes)
+            {
+                node.update();
+            }
+        }
+
+        protected function sortNodes():void
+        {
+            _activeNodes.sort(_nodesSortFunction);
+        }
+
+        protected function sortNodesByIndex(firstNode:TreeViewNode, secondNode:TreeViewNode):int
+        {
+            return firstNode.index - secondNode.index;
         }
 
         protected function estimateContentHeight():void
@@ -784,7 +806,7 @@ package com.bit101.components.treeView
          */
         public function refresh():void
         {
-            invalidate();
+            draw();
         }
 
         /**
@@ -1100,6 +1122,17 @@ package com.bit101.components.treeView
         public function get selectedItems():Vector.<TreeViewItem>
         {
             return _selectedItems;
+        }
+
+        public function get nodesSortFunction():Function
+        {
+            return _nodesSortFunction;
+        }
+
+        public function set nodesSortFunction(value:Function):void
+        {
+            _nodesSortFunction = value;
+            invalidate();
         }
     }
 }
