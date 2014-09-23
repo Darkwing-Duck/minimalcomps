@@ -235,24 +235,24 @@ package com.bit101.components.treeView
             _isOvered = false;
         }
 
-        private function onExpandButtonClick(event:MouseEvent):void
+        protected function onExpandButtonClick(event:MouseEvent):void
         {
             switchExpandButton();
         }
 
-        private function onMouseOver(event:MouseEvent):void
+        protected function onMouseOver(event:MouseEvent):void
         {
             _isOvered = true;
             invalidate();
         }
 
-        private function onMouseOut(event:MouseEvent):void
+        protected function onMouseOut(event:MouseEvent):void
         {
             _isOvered = false;
             invalidate();
         }
 
-        private function onDoubleClick(event:MouseEvent):void
+        protected function onDoubleClick(event:MouseEvent):void
         {
             if (_node.children.length <= 0)
             {

@@ -111,6 +111,7 @@ package com.bit101.components.treeView
             node.parent = this;
             _children.push(node);
             updateNodesIndex();
+            expand();
 
             node.onAddedInHierarchy();
         }
@@ -499,7 +500,10 @@ package com.bit101.components.treeView
 
         public function update():void
         {
-            //
+            for each (var childNode:TreeViewNode in children)
+            {
+                childNode.update();
+            }
         }
 
         /**

@@ -238,26 +238,48 @@ package com.bit101.components.treeView
             _activeNodes = new <TreeViewNode>[];
 
             deactivateItems();
-            processNode(_rootNode);
-            updateNodes();
+            updateNodeHierarchy(_rootNode);
             sortNodes();
+            processNode(_rootNode);
             estimateContentHeight();
             prepareItems();
             displayItems();
             removeUnusedItems();
         }
 
-        protected function updateNodes():void
+        protected function updateNodeHierarchy(node:TreeViewNode):void
         {
-            for each (var node:TreeViewNode in _activeNodes)
+            node.update();
+
+            var i:int = 0;
+            var childNode:TreeViewNode;
+
+            while (i < node.children.length)
             {
-                node.update();
+                childNode = node.children[i];
+                updateNodeHierarchy(childNode);
+                i++;
             }
         }
 
         protected function sortNodes():void
         {
-            _activeNodes.sort(_nodesSortFunction);
+            sortChildNodesFor(_rootNode)
+        }
+
+        protected function sortChildNodesFor(node:TreeViewNode):void
+        {
+            node.children.sort(_nodesSortFunction);
+
+            var i:int = 0;
+            var childNode:TreeViewNode;
+
+            while (i < node.children.length)
+            {
+                childNode = node.children[i];
+                sortChildNodesFor(childNode);
+                i++;
+            }
         }
 
         protected function sortNodesByIndex(firstNode:TreeViewNode, secondNode:TreeViewNode):int
@@ -773,6 +795,13 @@ package com.bit101.components.treeView
         {
             var node:TreeViewNode = processNodeData(data);
             _rootNode.addNode(node);
+            refresh();
+        }
+
+        public function addToNode(data:Object, parentNode:TreeViewNode):void
+        {
+            var childNode:TreeViewNode = processNodeData(data);
+            parentNode.addNode(childNode);
             refresh();
         }
 
