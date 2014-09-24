@@ -667,7 +667,7 @@ package com.bit101.components.treeView
                 return;
             }
 
-            invalidate();
+            refresh();
         }
 
         /**
@@ -682,7 +682,7 @@ package com.bit101.components.treeView
                 return;
             }
 
-            invalidate();
+            refresh();
         }
 
         /**
