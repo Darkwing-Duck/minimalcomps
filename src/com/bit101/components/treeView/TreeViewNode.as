@@ -22,6 +22,7 @@ package com.bit101.components.treeView
         private var _children:Vector.<TreeViewNode>;
         private var _isExpanded:Boolean;
         private var _indent:int;
+        private var _isDisposed:Boolean;
 
         //---------------------------------------------------------------
         //
@@ -50,6 +51,7 @@ package com.bit101.components.treeView
             _children = new <TreeViewNode>[];
             _isExpanded = false;
             _indent = 0;
+            _isDisposed = false;
         }
 
         protected function updateIndent():void
@@ -71,6 +73,11 @@ package com.bit101.components.treeView
         public function onAddedInHierarchy():void
         {
             //
+        }
+
+        protected function onWillBeDisposed():void
+        {
+
         }
 
         //---------------------------------------------------------------
@@ -511,9 +518,12 @@ package com.bit101.components.treeView
          */
         public function dispose():void
         {
+            onWillBeDisposed();
+
             _name = null;
             _tag = null;
             _children = null;
+            _isDisposed = true;
         }
 
         //---------------------------------------------------------------
@@ -521,6 +531,11 @@ package com.bit101.components.treeView
         //      ACCESSORS
         //
         //---------------------------------------------------------------
+
+        public function get isDisposed():Boolean
+        {
+            return _isDisposed;
+        }
 
         public function get index():int
         {

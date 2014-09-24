@@ -848,12 +848,19 @@ package com.bit101.components.treeView
 
         public function removeNode(node:TreeViewNode, needRefresh:Boolean = true):void
         {
-            if (node.parent)
+            if (!node.parent)
             {
-                node.parent.removeNode(node);
-                node.dispose();
-                node = null;
+                return;
             }
+
+            if (node.parent.isDisposed)
+            {
+                return;
+            }
+
+            node.parent.removeNode(node);
+            node.dispose();
+            node = null;
 
             if (needRefresh)
             {
@@ -865,7 +872,7 @@ package com.bit101.components.treeView
         {
             for each (var node:TreeViewNode in nodes)
             {
-                removeNode(node);
+                removeNode(node, false);
             }
 
             refresh();
