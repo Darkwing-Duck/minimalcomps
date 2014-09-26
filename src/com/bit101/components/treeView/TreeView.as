@@ -32,11 +32,11 @@ package com.bit101.components.treeView
         protected var _activeNodes:Vector.<TreeViewNode>;
         protected var _inactiveItems:Vector.<TreeViewItem>;
         protected var _itemClass:Class;
-        private var _nodeClass:Class;
+        protected var _nodeClass:Class;
         protected var _itemHeight:int;
         protected var _canMultiSelect:Boolean;
         protected var _allowMultiSelection:Boolean;
-        private var _selectedItems:Vector.<TreeViewItem>;
+        protected var _selectedItems:Vector.<TreeViewItem>;
         protected var _multiSelectionKeyCodes:Vector.<uint>;
         protected var _alternateRows:Boolean;
         protected var _highlightOnHover:Boolean;
