@@ -349,7 +349,7 @@ package com.bit101.components.treeView
         public function set defaultColor(value:uint):void
         {
             _defaultColor = value;
-            draw();
+            invalidate();
         }
 
         public function get selectedColor():uint
@@ -360,7 +360,7 @@ package com.bit101.components.treeView
         public function set selectedColor(value:uint):void
         {
             _selectedColor = value;
-            draw();
+            invalidate();
         }
 
         public function get rolloverColor():uint
@@ -371,7 +371,7 @@ package com.bit101.components.treeView
         public function set rolloverColor(value:uint):void
         {
             _rolloverColor = value;
-            draw();
+            invalidate();
         }
 
         public function get defaultTextColor():uint
@@ -382,7 +382,7 @@ package com.bit101.components.treeView
         public function set defaultTextColor(value:uint):void
         {
             _defaultTextColor = value;
-            draw();
+            invalidate();
         }
 
         public function get selectedTextColor():uint
@@ -393,7 +393,7 @@ package com.bit101.components.treeView
         public function set selectedTextColor(value:uint):void
         {
             _selectedTextColor = value;
-            draw();
+            invalidate();
         }
 
         public function get rolloverTextColor():uint
@@ -404,7 +404,7 @@ package com.bit101.components.treeView
         public function set rolloverTextColor(value:uint):void
         {
             _rolloverTextColor = value;
-            draw();
+            invalidate();
         }
 
         public function get indentSize():int
@@ -415,7 +415,7 @@ package com.bit101.components.treeView
         public function set indentSize(value:int):void
         {
             _indentSize = value;
-            draw();
+            invalidate();
         }
 
         public function get isSelected():Boolean
@@ -432,7 +432,7 @@ package com.bit101.components.treeView
         {
             _highlightOnHover = value;
             updateHighlightingOnHoverState();
-            draw();
+            invalidate();
         }
 
         public function get estimatedWidth():Number
