@@ -321,8 +321,7 @@ package com.bit101.components.treeView
             for (var i:int = 0; i < _group.numChildren; i++)
             {
                 item = TreeViewItem(_group.getChildAt(i));
-                item.removeEventListener(MouseEvent.CLICK, onItemClick);
-                item.onDeactivate();
+                deactivateItem(item);
             }
         }
 
@@ -381,19 +380,30 @@ package com.bit101.components.treeView
                     _group.addChild(item);
                 }
 
-                item.onActivate();
-
-                if (selectable)
-                {
-                    item.addEventListener(MouseEvent.CLICK, onItemClick);
-                }
-                else
-                {
-                    item.removeEventListener(MouseEvent.CLICK, onItemClick);
-                }
+                activateItem(item);
             }
 
             _itemsToDisplay = new <TreeViewItem>[];
+        }
+
+        protected function activateItem(item:TreeViewItem):void
+        {
+            item.onActivate();
+
+            if (selectable)
+            {
+                item.addEventListener(MouseEvent.CLICK, onItemClick);
+            }
+            else
+            {
+                item.removeEventListener(MouseEvent.CLICK, onItemClick);
+            }
+        }
+
+        protected function deactivateItem(item:TreeViewItem):void
+        {
+            item.removeEventListener(MouseEvent.CLICK, onItemClick);
+            item.onDeactivate();
         }
 
         protected function calculateItemColors(item:TreeViewItem, index:int):void

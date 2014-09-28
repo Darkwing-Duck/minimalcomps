@@ -243,13 +243,13 @@ package com.bit101.components.treeView
         protected function onMouseOver(event:MouseEvent):void
         {
             _isOvered = true;
-            draw();
+            invalidate();
         }
 
         protected function onMouseOut(event:MouseEvent):void
         {
             _isOvered = false;
-            draw();
+            invalidate();
         }
 
         protected function onDoubleClick(event:MouseEvent):void
@@ -294,7 +294,7 @@ package com.bit101.components.treeView
             }
 
             _isSelected = true;
-            draw();
+            invalidate();
         }
 
         public function unselect():void
@@ -305,7 +305,7 @@ package com.bit101.components.treeView
             }
 
             _isSelected = false;
-            draw();
+            invalidate();
         }
 
         public function update():void
