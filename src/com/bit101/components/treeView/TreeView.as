@@ -838,15 +838,6 @@ package com.bit101.components.treeView
             return index >= 0;
         }
 
-        public function addToRoot(data:Object):TreeViewNode
-        {
-            var node:TreeViewNode = processNodeData(data);
-            _rootNode.addNode(node);
-            refresh();
-
-            return node;
-        }
-
         public function addToNode(data:Object, parentNode:TreeViewNode):TreeViewNode
         {
             var childNode:TreeViewNode = processNodeData(data);
@@ -1220,6 +1211,11 @@ package com.bit101.components.treeView
         {
             _nodesSortFunction = value;
             invalidate();
+        }
+
+        public function get rootNode():TreeViewNode
+        {
+            return _rootNode;
         }
     }
 }
