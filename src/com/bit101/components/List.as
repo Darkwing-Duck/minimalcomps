@@ -48,7 +48,8 @@ package com.bit101.components
 		protected var _selectedColor:uint = Style.LIST_SELECTED;
 		protected var _rolloverColor:uint = Style.LIST_ROLLOVER;
 		protected var _alternateRows:Boolean = false;
-        private var _selectable:Boolean = true;
+        protected var _selectable:Boolean = true;
+        private var _highlightOnHover:Boolean = true;
 		
 		/**
 		 * Constructor
@@ -132,6 +133,8 @@ package com.bit101.components
 
             item.selectedColor = _selectedColor;
             item.rolloverColor = _rolloverColor;
+
+            item.highlightOnHover = _highlightOnHover;
 
             if (_selectable)
             {
@@ -447,6 +450,7 @@ package com.bit101.components
 		public function set items(value:Array):void
 		{
 			_items = value;
+            makeListItems();
 			invalidate();
 		}
 		public function get items():Array
@@ -514,6 +518,18 @@ package com.bit101.components
         public function set selectable(value:Boolean):void
         {
             _selectable = value;
+            makeListItems();
+            invalidate();
+        }
+
+        public function get highlightOnHover():Boolean
+        {
+            return _highlightOnHover;
+        }
+
+        public function set highlightOnHover(value:Boolean):void
+        {
+            _highlightOnHover = value;
             makeListItems();
             invalidate();
         }

@@ -41,6 +41,7 @@ package com.bit101.components
 		protected var _rolloverColor:uint = 0xeeeeee;
 		protected var _selected:Boolean;
 		protected var _mouseOver:Boolean = false;
+        protected var _highlightOnHover:Boolean = true;
 		
 		/**
 		 * Constructor
@@ -117,6 +118,19 @@ package com.bit101.components
 				_label.text = _data.toString();
 			}
 		}
+
+        protected function updateHighlightOnHoverState():void
+        {
+            if (_highlightOnHover)
+            {
+                addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
+            }
+            else
+            {
+                removeEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
+                removeEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+            }
+        }
 		
 		
 		
@@ -211,10 +225,21 @@ package com.bit101.components
 			_rolloverColor = value;
 			invalidate();
 		}
+
 		public function get rolloverColor():uint
 		{
 			return _rolloverColor;
 		}
-		
-	}
+
+        public function get highlightOnHover():Boolean
+        {
+            return _highlightOnHover;
+        }
+
+        public function set highlightOnHover(value:Boolean):void
+        {
+            _highlightOnHover = value;
+            updateHighlightOnHoverState();
+        }
+    }
 }
